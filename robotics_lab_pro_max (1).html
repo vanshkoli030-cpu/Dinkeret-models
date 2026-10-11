@@ -1,0 +1,629 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>All-in-One Robotics Lab 3D</title>
+<style>
+:root{--bg:#0b1020;--panel:#121a2d;--panel2:#18233b;--line:#293653;--text:#eef4ff;--muted:#9fb0cf;--accent:#58d6c7;--accent2:#7ea7ff;--warn:#ffd166}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#172342 0,#0b1020 45%);color:var(--text);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:#0c1325dd;position:sticky;top:0;z-index:5;backdrop-filter:blur(12px)}
+.brand{display:flex;gap:12px;align-items:center}.logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;color:#07111f;font-size:23px;font-weight:900}.brand h1{font-size:19px;margin:0}.brand p{margin:2px 0 0;color:var(--muted);font-size:12px}
+button,input,select{font:inherit}button{cursor:pointer;border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:9px;padding:9px 12px}button:hover{border-color:var(--accent);transform:translateY(-1px)}button.primary{background:var(--accent);color:#07111f;border-color:transparent;font-weight:800}button.danger{border-color:#75404c;color:#ffc2cc}
+.app{display:grid;grid-template-columns:270px minmax(300px,1fr) 290px;gap:14px;padding:14px;max-width:1800px;margin:auto}
+.panel{background:linear-gradient(180deg,#141d32,#101729);border:1px solid var(--line);border-radius:15px;overflow:hidden;min-width:0}.panel-head{padding:14px 15px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:8px}.panel-head h2{font-size:14px;margin:0}.panel-body{padding:13px}
+.search{width:100%;padding:10px 11px;border-radius:9px;border:1px solid var(--line);background:#0b1223;color:var(--text);outline:none}.search:focus{border-color:var(--accent)}
+.categories{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}.chip{padding:6px 8px;font-size:11px;border-radius:999px}.chip.active{background:var(--accent);color:#07111f;border-color:var(--accent);font-weight:800}
+.library-list{display:grid;gap:7px;max-height:calc(100vh - 310px);overflow:auto;padding-right:2px}.part{display:flex;gap:10px;align-items:center;text-align:left;width:100%;padding:9px;background:#10182b}.part.selected{border-color:var(--accent);background:#142b39}.part-icon{width:42px;height:42px;border-radius:10px;background:#202d48;display:grid;place-items:center;font-size:22px;flex-shrink:0}.part b{display:block;font-size:12px}.part small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.stage-wrap{display:flex;flex-direction:column;min-height:590px}.toolbar{display:flex;flex-wrap:wrap;gap:7px}.toolbar button{font-size:12px;padding:8px 10px}.stage{position:relative;flex:1;min-height:410px;background:radial-gradient(ellipse at center,#1b2947 0,#0b1224 75%);overflow:hidden}.stage canvas{display:block;width:100%;height:100%;min-height:410px}.hint{position:absolute;left:12px;bottom:12px;padding:7px 10px;border:1px solid #344565;border-radius:8px;background:#0a1120cc;color:#b9c9e6;font-size:11px;pointer-events:none}.stage-label{position:absolute;top:12px;left:12px;font-size:11px;color:#c2d0e9;letter-spacing:.12em;text-transform:uppercase}
+.info-title{display:flex;gap:10px;align-items:center}.big-icon{font-size:30px;width:52px;height:52px;display:grid;place-items:center;border-radius:12px;background:#202d48}.info-title h3{margin:0;font-size:16px}.info-title p{margin:3px 0 0;color:var(--muted);font-size:11px}.tag{display:inline-block;background:#193a43;color:#9af3e5;border-radius:999px;padding:4px 8px;font-size:10px;margin-top:10px}
+h4{margin:17px 0 7px;font-size:12px;color:#b8c9e8;text-transform:uppercase;letter-spacing:.08em}.description{color:#cfdaef;font-size:12px}.specs{display:grid;grid-template-columns:1fr 1fr;gap:7px}.spec{padding:9px;background:#0d1527;border:1px solid #202e49;border-radius:9px}.spec small{display:block;color:var(--muted);font-size:10px}.spec b{font-size:12px}
+.project-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}.project-actions button{font-size:11px}
+.workspace-list{display:grid;gap:7px;max-height:190px;overflow:auto}.workspace-item{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:8px;background:#0d1527;border:1px solid #202e49;border-radius:8px;font-size:11px}.workspace-item span{color:#dce8fb}.workspace-item button{padding:4px 7px;font-size:10px}
+.status{padding:10px 12px;border-top:1px solid var(--line);color:var(--muted);font-size:11px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.notice{border:1px solid #65552d;background:#302916;color:#ffe6a3;border-radius:10px;padding:10px;font-size:11px;margin-top:12px}.template-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.media-box{display:grid;gap:8px}.media-box input,.media-box textarea{width:100%;padding:9px;border-radius:8px;border:1px solid var(--line);background:#0b1223;color:var(--text)}.media-frame{width:100%;aspect-ratio:16/9;background:#0a1120;border:1px solid var(--line);border-radius:10px;overflow:hidden}.media-frame iframe,.media-frame img,.media-frame video{width:100%;height:100%;object-fit:contain;border:0}.media-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.media-card{background:#0d1527;border:1px solid #202e49;border-radius:8px;padding:7px;font-size:11px}.media-card img{width:100%;height:85px;object-fit:cover;border-radius:5px}.small-note{font-size:10px;color:var(--muted)}
+footer{color:#8292b1;text-align:center;padding:0 18px 22px;font-size:11px}
+@media(max-width:1100px){.app{grid-template-columns:250px minmax(300px,1fr)}.right-col{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:14px}.right-col .panel{height:max-content}.right-col .panel+.panel{margin-top:0}}
+@media(max-width:720px){header{position:static}.app{grid-template-columns:1fr;padding:9px}.left-col{order:2}.center-col{order:1}.right-col{order:3;display:block}.right-col .panel+.panel{margin-top:12px}.library-list{max-height:330px}.stage-wrap{min-height:510px}.stage{min-height:400px}.stage canvas{min-height:400px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="logo">⚙</div><div><h1>ALL‑IN‑ONE ROBOTICS LAB</h1><p>3D component explorer · robot assembly workspace · circuit planning starter</p></div></div>
+  <div class="toolbar"><button id="newProject">＋ New workspace</button><button id="exportBtn" class="primary">Export project JSON</button><button id="importBtn">Import JSON</button><input id="importFile" type="file" accept=".json,application/json" hidden></div>
+</header>
+<main class="app">
+  <aside class="panel left-col">
+    <div class="panel-head"><h2>🧩 Component library</h2><span id="partCount" style="color:var(--muted);font-size:11px"></span></div>
+    <div class="panel-body">
+      <input id="search" class="search" placeholder="Search Arduino, battery, sensor…" autocomplete="off">
+      <div class="categories" id="categories"></div>
+      <div class="library-list" id="library"></div>
+      <div class="notice">High-fidelity procedural models with physical materials, clearcoat, emissive LEDs, and detailed geometry. Still approximations — exact manufacturing CAD requires STEP files.</div>
+    </div>
+  </aside>
+  <section class="panel center-col stage-wrap">
+    <div class="panel-head"><h2>🌐 3D workbench</h2><div class="toolbar"><button id="addSelected" class="primary">＋ Add to workspace</button><button id="removeSelected">Remove selected</button><button id="resetView">Reset view</button><button id="fitView">Fit assembly</button></div></div>
+    <div class="stage" id="stage"><div class="stage-label">Interactive 3D preview</div><div class="hint">Drag: rotate · Scroll/pinch: zoom · Click a workspace part to select</div></div>
+    <div class="status"><span id="sceneStatus">Loading 3D scene…</span><span>Browser-based prototype · no circuit simulation yet</span></div>
+  </section>
+  <aside class="right-col">
+    <section class="panel">
+      <div class="panel-head"><h2>🔎 Component details</h2></div>
+      <div class="panel-body" id="details"></div>
+    </section>
+    <section class="panel" style="margin-top:14px">
+      <div class="panel-head"><h2>🛠 Workspace assembly</h2><button id="clearWorkspace" class="danger">Clear</button></div>
+      <div class="panel-body">
+        <div class="workspace-list" id="workspaceList"></div>
+        <h4>Quick tools</h4>
+        <div class="project-actions">
+          <button id="addArduino">Add Arduino</button><button id="addBattery">Add battery</button>
+          <button id="addBreadboard">Add breadboard</button><button id="addMotor">Add DC motor</button>
+        </div>
+        <h4>Connection planner</h4>
+        <div class="description">Choose two workspace components to create a planning link. Links are visual notes only; they do not confirm electrical compatibility.</div>
+        <div style="display:grid;gap:7px;margin-top:8px">
+          <select id="fromPart" class="search"><option value="">From component…</option></select>
+          <select id="toPart" class="search"><option value="">To component…</option></select>
+          <input id="wireLabel" class="search" placeholder="Wire / signal label (e.g. 5V, GND, D7)">
+          <button id="connectBtn">＋ Add connection note</button>
+        </div>
+        <div id="connections" style="display:grid;gap:6px;margin-top:9px"></div>
+        <h4>🚀 Ready-made robot examples</h4>
+        <div class="template-grid">
+          <button data-template="car">🚗 Robot car</button><button data-template="line">↔ Line follower</button>
+          <button data-template="drone">🚁 Quadcopter drone</button><button data-template="arm">🦾 Robotic arm</button>
+          <button data-template="weather">🌦 Weather station</button><button data-template="smart">🏠 Smart automation</button>
+        </div>
+        <h4>📷 Photos & videos</h4>
+        <div class="media-box">
+          <input id="mediaImage" type="file" accept="image/*">
+          <input id="mediaVideo" type="file" accept="video/*">
+          <input id="youtubeUrl" placeholder="Paste a YouTube video link">
+          <button id="loadVideo">Show video</button>
+          <div id="mediaFrame" class="media-frame"><div style="padding:18px;color:var(--muted)">Add a reference photo or video to view it here.</div></div>
+          <div class="small-note">Photos/videos you choose are reference media; they do not automatically become 3D geometry.</div>
+        </div>
+        <div class="notice">⚠️ Educational planning tool: check voltage, current, polarity, pinout, and datasheets before physically wiring anything. Never connect a battery directly to a microcontroller pin.</div>
+      </div>
+    </section>
+  </aside>
+</main>
+<footer>Robotics Lab starter · Works best with an internet connection for the Three.js library. Project export stores your workspace and connection notes.</footer>
+<!-- OrbitControls imports the bare module name "three". This import map lets
+     browsers resolve it correctly on static hosting such as GitHub Pages. -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+
+const parts = [
+{id:'arduino-uno',name:'Arduino Uno R3',category:'Controllers',icon:'🟦',type:'board',color:0x168f83,desc:'A beginner-friendly microcontroller board for reading sensors and controlling outputs.',use:'Robot brains, sensor projects, automation prototypes.',specs:{Logic:'5 V',Pins:'Digital + analog',USB:'USB-B',Controller:'ATmega328P'},items:'PCB, USB connector, DC barrel jack, headers, reset button, power LEDs, ATmega328P package'},
+{id:'arduino-mega',name:'Arduino Mega 2560',category:'Controllers',icon:'🟦',type:'board',color:0x147c78,desc:'A larger Arduino board with more I/O pins for projects with many sensors and actuators.',use:'Larger robots, multiple modules, robotics arms.',specs:{Logic:'5 V',Pins:'Many I/O pins',USB:'USB-B',Controller:'ATmega2560'},items:'PCB, microcontroller, USB interface, power jack, headers, LEDs, reset switch'},
+{id:'esp32',name:'ESP32 Dev Board',category:'Controllers',icon:'📶',type:'board',color:0x344c67,desc:'A Wi-Fi and Bluetooth-capable microcontroller development board.',use:'Wireless robot control, IoT, telemetry.',specs:{Logic:'3.3 V GPIO',Wireless:'Wi‑Fi + Bluetooth',USB:'Varies by board',Caution:'GPIO is not 5 V tolerant'},items:'PCB, ESP32 module, antenna, USB connector, voltage regulator, headers'},
+{id:'raspberry-pi',name:'Raspberry Pi board',category:'Controllers',icon:'🍓',type:'board',color:0x2e7547,desc:'A small single-board computer capable of running a full operating system.',use:'Computer vision, high-level robot control, networking.',specs:{Logic:'3.3 V GPIO',Power:'Model dependent',Compute:'Linux computer',Caution:'GPIO is not 5 V tolerant'},items:'PCB, processor, RAM, GPIO header, USB/HDMI connectors, networking components'},
+{id:'battery-9v',name:'9 V battery',category:'Power',icon:'🔋',type:'battery',color:0x333d4d,desc:'A compact battery often used for low-current experiments. It is not suitable for every motor.',use:'Small demos and low-current circuits with a suitable regulator.',specs:{Output:'Nominal 9 V',Chemistry:'Varies',Current:'Limited',Note:'Check load requirements'},items:'Battery case, positive terminal, negative terminal, internal cells'},
+{id:'liion-pack',name:'Li-ion battery pack',category:'Power',icon:'🔋',type:'battery',color:0x286b4b,desc:'Rechargeable battery pack; needs correct protection, charging, and voltage regulation.',use:'Mobile robots when pack voltage/current matches the design.',specs:{Voltage:'Depends on cell count',Rechargeable:'Yes',Protection:'BMS recommended',Caution:'Short-circuit/fire risk'},items:'Cells, holder or shrink wrap, leads, connector, protection board where fitted'},
+{id:'breadboard',name:'Breadboard',category:'Prototyping',icon:'▦',type:'breadboard',color:0xd8dce5,desc:'Solderless board for temporary low-voltage circuit prototyping.',use:'Testing sensors, resistors, LEDs, and small circuits.',specs:{Solderless:'Yes',Power:'No power source',Contacts:'Internal metal strips',Limit:'Low current only'},items:'Plastic body, terminal strips, power rails, printed markings'},
+{id:'jumper-wire',name:'Jumper wires',category:'Wiring',icon:'〰️',type:'wire',color:0xe0b74d,desc:'Insulated wires used to connect breadboards, modules, and headers.',use:'Signal, power, and ground connections when correctly rated.',specs:{Types:'Male/male, male/female, female/female',Conductors:'Copper typically',Rating:'Depends on wire',Note:'Match pin and current'},items:'Insulation, conductive core, crimped terminal pins'},
+{id:'dc-motor',name:'DC geared motor',category:'Motors',icon:'⚙️',type:'motor',color:0xb77a38,desc:'A motor converts electrical energy into rotation. A driver is normally required for microcontroller control.',use:'Robot wheels and small mechanisms.',specs:{Voltage:'Read motor label',Control:'Motor driver',Pins:'2 terminals',Caution:'Startup current can be high'},items:'Motor can, shaft, gearbox, output shaft, terminals, mounting points'},
+{id:'servo',name:'Servo motor',category:'Motors',icon:'🔧',type:'servo',color:0x4f7ab5,desc:'A position-controlled actuator with internal motor and feedback/control electronics.',use:'Robot arms, steering, pan-tilt mounts.',specs:{Control:'PWM-style signal',Wires:'Power, ground, signal',Range:'Model dependent',Caution:'Use suitable power supply'},items:'Case, output horn, shaft, gear train, control PCB, three-wire lead'},
+{id:'stepper',name:'Stepper motor',category:'Motors',icon:'🧭',type:'motor',color:0x78899f,desc:'Moves in discrete steps and usually needs a compatible stepper driver.',use:'Positioning, CNC-style mechanisms, precise movement.',specs:{Control:'Driver required',Coils:'Model dependent',Motion:'Discrete steps',Caution:'Check driver current'},items:'Stator, rotor, shaft, coil leads, mounting face'},
+{id:'motor-driver',name:'Motor driver module',category:'Drivers',icon:'🎛️',type:'module',color:0x267f74,desc:'Interfaces a controller to a motor and handles higher motor current.',use:'Direction and speed control for motors.',specs:{Supply:'Driver-specific',Inputs:'Logic signals',Outputs:'Motor terminals',Caution:'Check current/heat limits'},items:'PCB, driver IC, screw terminals, headers, heatsink on some modules'},
+{id:'ultrasonic',name:'Ultrasonic distance sensor',category:'Sensors',icon:'👀',type:'sensor',color:0x347b8b,desc:'Estimates distance using an ultrasonic pulse and echo timing.',use:'Obstacle avoidance and distance measurement.',specs:{Pins:'VCC, Trig, Echo, GND (common type)',Range:'Model dependent',Logic:'Check echo voltage',Output:'Timing signal'},items:'PCB, two transducer cans, timing circuitry, pin header'},
+{id:'ir-sensor',name:'IR obstacle sensor',category:'Sensors',icon:'📡',type:'sensor',color:0x7b4e40,desc:'Uses infrared light to detect nearby objects or reflective surfaces.',use:'Line-following and short-range obstacle detection.',specs:{Pins:'Usually VCC, GND, OUT',Adjust:'Often has trimmer',Range:'Surface dependent',Output:'Digital or analog'},items:'PCB, IR emitter, IR receiver, comparator IC, potentiometer, header'},
+{id:'rain-sensor',name:'Rain sensor module',category:'Sensors',icon:'🌧️',type:'sensor',color:0x3b8d9b,desc:'A conductive plate and controller can detect water droplets or wetness.',use:'Rain alarms, automatic covers, school science projects.',specs:{Parts:'Probe plate + controller',Output:'Analog/digital on common modules',Caution:'Probe corrosion possible',Power:'Module dependent'},items:'Sensing plate, conductive tracks, comparator module, potentiometer, pins'},
+{id:'dht-sensor',name:'Temperature/humidity sensor',category:'Sensors',icon:'🌡️',type:'sensor',color:0x57926d,desc:'Measures ambient temperature and humidity; exact interface depends on sensor model.',use:'Weather stations and environment monitoring.',specs:{Output:'Digital on common modules',Power:'Model dependent',Measures:'Temperature + humidity',Timing:'Follow datasheet'},items:'Sensor package, grille/slots, PCB on module, pull-up components'},
+{id:'gas-sensor',name:'Gas sensor module',category:'Sensors',icon:'💨',type:'sensor',color:0x9a7947,desc:'Gas-sensing modules may need warm-up and calibration and are not safety-certified by default.',use:'Demonstration of air-quality sensing, not life-safety protection.',specs:{Output:'Often analog + digital',Heater:'May be present',Calibration:'Required',Caution:'Not a certified alarm'},items:'Metal mesh sensor can, heater, sensing element, PCB, comparator'},
+{id:'ldr',name:'LDR light sensor',category:'Sensors',icon:'☀️',type:'sensor',color:0xb29b42,desc:'A light-dependent resistor changes resistance with light level.',use:'Automatic lights and brightness sensing.',specs:{Output:'Analog divider typically',Part:'Photoresistor',Extra:'Resistor needed',Range:'Depends on LDR'},items:'Photoresistor disc, leads, divider resistor, optional module PCB'},
+{id:'lcd1602',name:'16×2 LCD display',category:'Displays',icon:'🖥️',type:'display',color:0x397b68,desc:'Character display for showing sensor readings and status messages.',use:'Project status, measured values, menus.',specs:{Format:'16 columns × 2 rows',Interface:'Parallel or I²C adapter',Power:'Model dependent',Logic:'Check module'},items:'LCD glass, PCB, backlight, controller IC, pin header'},
+{id:'oled',name:'OLED display module',category:'Displays',icon:'▣',type:'display',color:0x35495c,desc:'Small pixel display often used for compact status and sensor readouts.',use:'Wearables, small robots, compact dashboards.',specs:{Interface:'Often I²C/SPI',Size:'Model dependent',Logic:'Check module',Power:'Low, model dependent'},items:'OLED panel, PCB, controller, connector'},
+{id:'led',name:'LED indicator',category:'Components',icon:'💡',type:'led',color:0xd64d52,desc:'A light-emitting diode needs current limiting unless the module already includes it.',use:'Power, status, and signal indicators.',specs:{Polarity:'Anode + / cathode −',Resistor:'Usually required',Current:'Check datasheet',Color:'Part dependent'},items:'Epoxy lens, semiconductor die, anode lead, cathode lead'},
+{id:'resistor',name:'Resistor',category:'Components',icon:'〰',type:'resistor',color:0xc99b62,desc:'Limits current or sets voltages in a circuit. Value and power rating matter.',use:'LED current limiting, pull-ups, voltage dividers.',specs:{Value:'Color code or printed value',Unit:'Ohm (Ω)',Power:'Rated in watts',Tolerance:'Part dependent'},items:'Resistive element, coating, leads, color bands or markings'},
+{id:'capacitor',name:'Capacitor',category:'Components',icon:'║',type:'capacitor',color:0x6589c7,desc:'Stores electrical charge and is used for filtering, timing, and decoupling.',use:'Power smoothing, noise reduction, signal circuits.',specs:{Value:'Farads (F)',Polarity:'Some types polarized',Voltage:'Do not exceed rating',Type:'Ceramic/electrolytic/etc.'},items:'Dielectric, conductive plates, body, leads'},
+{id:'transistor',name:'Transistor',category:'Components',icon:'◉',type:'transistor',color:0x4c647c,desc:'A semiconductor device used for switching or amplification.',use:'Driving loads with a suitable circuit, signal amplification.',specs:{Type:'BJT or MOSFET, etc.',Pins:'Check exact part',Rating:'Voltage/current dependent',Extra:'Gate/base drive matters'},items:'Semiconductor die, package, three or more leads'},
+{id:'relay',name:'Relay module',category:'Drivers',icon:'🔲',type:'module',color:0x39795c,desc:'An electrically controlled switch. Contacts and coil ratings must match the application.',use:'Switching compatible loads with proper isolation and protection.',specs:{Coil:'Module dependent',Contacts:'NO/NC/COM common',Isolation:'Design dependent',Caution:'Mains voltage is hazardous'},items:'Relay body, coil, contacts, driver transistor, protection diode, terminals'},
+{id:'buzzer',name:'Buzzer',category:'Outputs',icon:'🔔',type:'buzzer',color:0xb58d3e,desc:'Produces sound when powered or driven with a signal, depending on type.',use:'Alarms, feedback, rain detector alerts.',specs:{Type:'Active or passive',Polarity:'Check markings',Drive:'May need transistor',Sound:'Part dependent'},items:'Sounder case, piezo/magnetic element, terminals'},
+{id:'solar-panel',name:'Small solar panel',category:'Power',icon:'🌞',type:'panel',color:0x286d9a,desc:'Converts light into electrical energy. Output varies with light and load.',use:'Solar demonstrations and low-power projects with suitable regulation.',specs:{Output:'Panel dependent',Regulator:'Often required',Storage:'Battery charger required',Note:'Never assume fixed output'},items:'Photovoltaic cells, protective layer, backing, leads, frame'},
+{id:'wheel',name:'Robot wheel',category:'Mechanical',icon:'🛞',type:'wheel',color:0x333943,desc:'Wheel for a mobile robot; match bore and hub to motor shaft.',use:'Two-wheel or four-wheel robot chassis.',specs:{Fit:'Match motor shaft',Material:'Varies',Diameter:'Model dependent',Traction:'Tread dependent'},items:'Tire, hub, shaft bore, spokes or solid disc'},
+{id:'chassis',name:'Robot chassis plate',category:'Mechanical',icon:'▰',type:'chassis',color:0x56687d,desc:'Structural plate used to mount controller, batteries, motors, and sensors.',use:'Base of a mobile robot.',specs:{Material:'Acrylic/metal/plastic',Mounting:'Hole pattern varies',Size:'Project dependent',Note:'Plan mass and balance'},items:'Base plate, mounting holes, standoffs, brackets'},
+{id:'switch',name:'Power switch',category:'Components',icon:'⏻',type:'switch',color:0x4e6c83,desc:'Opens or closes a circuit. Must be rated for the voltage and current used.',use:'Safe power isolation for small prototypes.',specs:{Type:'SPST shown conceptually',Rating:'Check datasheet',Polarity:'Usually non-polarized',Note:'Disconnect power before rewiring'},items:'Actuator, contacts, housing, terminals'},
+{id:'usb-cable',name:'USB cable',category:'Wiring',icon:'🔌',type:'cable',color:0x687b96,desc:'Provides data and/or power depending on cable and device.',use:'Programming boards and supplying supported power.',specs:{Connector:'Varies',Data:'Not all cables support data',Power:'Cable dependent',Note:'Use correct board connector'},items:'Conductors, insulation, shielding where present, connectors'},
+{id:'dupont-wire',name:'Dupont jumper wire (M–F)',category:'Wiring',icon:'〰️',type:'wire',color:0xe04b4b,desc:'Single insulated jumper lead with a crimped female and male terminal.',use:'Connecting headers, breadboards and sensor modules.',specs:{Ends:'Male / female',Core:'Copper',Use:'Signal or low-current power',Note:'Check current rating'},items:'PVC insulation, copper conductor, crimp terminals, connector housing'},
+{id:'connector',name:'JST 2-pin connector',category:'Wiring',icon:'🔗',type:'connector',color:0xe8e3d2,desc:'Polarized two-pin connector commonly used for low-voltage battery or motor leads.',use:'Removable power and motor connections.',specs:{Pins:'2',Type:'Polarized',Current:'Model dependent',Note:'Match polarity'},items:'Molded housing, metal contacts, crimped wires'},
+{id:'lipo',name:'3S LiPo battery pack',category:'Power',icon:'🔋',type:'battery',color:0x222831,desc:'High-discharge rechargeable pack used in some mobile robots and drones.',use:'Only for designs with matching voltage, current rating and proper balance charging.',specs:{Nominal:'11.1 V',Full:'12.6 V',Cells:'3 in series',Safety:'Fire risk if damaged or misused'},items:'Wrapped pouch cells, balance lead, power lead, connector'},
+{id:'esc',name:'Brushless ESC',category:'Drivers',icon:'🎛️',type:'module',color:0x252b35,desc:'Electronic speed controller for a compatible brushless motor.',use:'Drone and RC motor control.',specs:{Input:'Battery-specific',Output:'3-phase motor',Control:'Model dependent',Note:'Match motor and propeller'},items:'PCB, MOSFETs, heat-shrink or heatsink, battery leads, 3 motor wires'},
+{id:'brushless-motor',name:'Brushless drone motor',category:'Motors',icon:'⚙️',type:'motor',color:0x9aa5b1,desc:'Outrunner motor used in quadcopters and other lightweight machines.',use:'Drone propulsion with a compatible ESC and propeller.',specs:{Type:'Brushless outrunner',Wires:'3 phase leads',Control:'ESC required',Note:'Keep propellers off during bench tests'},items:'Bell housing, stator, shaft, magnets, mounting base, 3 phase wires'},
+{id:'propeller',name:'Drone propeller',category:'Mechanical',icon:'✣',type:'propeller',color:0x242a33,desc:'Aerodynamic blade that produces thrust when spun by a matched motor.',use:'Quadcopter propulsion; select size and direction for the motor/ESC.',specs:{Type:'CW or CCW',Material:'Plastic/composite',Balance:'Important',Safety:'Never handle while powered'},items:'Hub, two blades, mounting bore'},
+{id:'camera',name:'Camera module',category:'Sensors',icon:'📷',type:'camera',color:0x273344,desc:'Camera module for vision, recording or visual navigation.',use:'Robotics vision and remote monitoring.',specs:{Interface:'Model dependent',Power:'Check datasheet',Focus:'Fixed or adjustable',Note:'Requires compatible controller'},items:'Lens, image sensor, PCB, connector, mounting holes'},
+{id:'lidar',name:'2D LiDAR sensor',category:'Sensors',icon:'📡',type:'lidar',color:0x555e6b,desc:'Distance-scanning sensor used for mapping and navigation.',use:'Autonomous robot mapping when supported by compatible software.',specs:{Output:'Model dependent',Interface:'UART/USB/etc.',Range:'Model dependent',Note:'Concept model'},items:'Optical window, rotating scan head, housing, connector'},
+{id:'bearing',name:'Ball bearing',category:'Mechanical',icon:'⭕',type:'bearing',color:0x9ba7b7,desc:'Reduces friction around a rotating shaft.',use:'Wheels, linkages and rotating mechanisms.',specs:{Fit:'Match shaft and housing',Type:'Rolling element',Material:'Usually steel',Note:'Use exact dimensions'},items:'Inner race, outer race, ball elements, cage'},
+{id:'screw',name:'M3 screw + nut',category:'Mechanical',icon:'🔩',type:'screw',color:0xb8c4d4,desc:'Fastener for securing brackets, boards and chassis.',use:'Mechanical assembly and mounting.',specs:{Thread:'M3 concept',Material:'Varies',Length:'Choose for assembly',Note:'Avoid short circuits on PCBs'},items:'Threaded shank, head, nut, washer if needed'},
+{id:'potentiometer',name:'10 kΩ potentiometer',category:'Components',icon:'🎚️',type:'pot',color:0x303844,desc:'Adjustable resistor used as a voltage divider or control input.',use:'Knobs, calibration and analog input experiments.',specs:{Value:'10 kΩ example',Pins:'3',Output:'Variable voltage divider',Note:'Wire to suitable reference voltage'},items:'Resistive track, wiper, shaft, three terminals'},
+{id:'stepdown',name:'DC-DC buck converter',category:'Power',icon:'⚡',type:'module',color:0x287c71,desc:'Steps a higher DC input voltage down to a suitable regulated output.',use:'Powering electronics from a compatible battery pack.',specs:{Input:'Module dependent',Output:'Adjustable/fixed',Current:'Thermal limits apply',Note:'Set output before connecting load'},items:'PCB, inductor, IC, capacitors, trim potentiometer, terminals'}
+];
+const categories=['All',...new Set(parts.map(p=>p.category))];
+const connectionObjects=new Map();
+function clearConnectionMeshes(){for(const o of connectionObjects.values()){group?.remove(o);dispose(o);}connectionObjects.clear();}
+function drawConnectionMeshes(){
+  if(!group)return;clearConnectionMeshes();
+  connections.forEach((c,i)=>{const a=workspace.find(w=>w.id===c.from),b=workspace.find(w=>w.id===c.to);if(!a||!b)return;
+    const col=/gnd|ground/i.test(c.label)?0x303846:/5v|vcc|power|battery/i.test(c.label)?0xd94c4c:/sda|scl|signal|d[0-9]/i.test(c.label)?0x58b9e8:0xe6b84f;
+    const start=new THREE.Vector3(a.x,a.y+.25,a.z),end=new THREE.Vector3(b.x,b.y+.25,b.z),mid1=start.clone().lerp(end,.33),mid2=start.clone().lerp(end,.67);mid1.y+=.65;mid2.y+=.65;
+    const curve=new THREE.CatmullRomCurve3([start,mid1,mid2,end]);const wire=new THREE.Mesh(new THREE.TubeGeometry(curve,36,.035,8,false),new THREE.MeshStandardMaterial({color:col,roughness:.32,metalness:.2}));
+    wire.userData.connectionIndex=i;group.add(wire);connectionObjects.set(String(i),wire);
+    const bead=new THREE.Mesh(new THREE.SphereGeometry(.065,12,8),new THREE.MeshStandardMaterial({color:col,metalness:.3}));bead.position.copy(start);group.add(bead);connectionObjects.set('b'+i,bead);
+  });
+}
+function addTemplate(kind){
+  clearWorkspace();const add=(id,x,y,z)=>{const p=parts.find(v=>v.id===id);if(!p)return null;const w={id:'part-'+nextInstance++,partId:id,label:p.name+' '+(workspace.filter(q=>q.partId===id).length+1),x,y,z};workspace.push(w);buildMesh(w);return w.id;};
+  const link=(a,b,label)=>{if(a&&b)connections.push({from:a,to:b,label});};
+  if(kind==='car'||kind==='line'){
+    const board=add('arduino-uno',0,.1,0),driver=add('motor-driver',0,.1,-1.6),battery=add('liion-pack',-2,.1,-1.6),sensor=kind==='line'?add('ir-sensor',0,.1,1.65):add('ultrasonic',0,.1,1.65),m1=add('dc-motor',-1.65,.1,-.45),m2=add('dc-motor',1.65,.1,-.45),w1=add('wheel',-2,.1,-.45),w2=add('wheel',2,.1,-.45),ch=add('chassis',0,-.2,-.25);
+    link(battery,driver,'Battery + / GND');link(driver,m1,'Motor A output');link(driver,m2,'Motor B output');link(board,driver,'PWM + direction pins');link(board,sensor,'5V / GND / sensor signal');link(board,battery,'Power only through suitable regulator');
+  }else if(kind==='drone'){
+    const fc=add('esp32',0,.25,0),bat=add('lipo',-1.6,.15,0),esc1=add('esc',-1.25,.1,-1.1),esc2=add('esc',1.25,.1,-1.1),esc3=add('esc',-1.25,.1,1.1),esc4=add('esc',1.25,.1,1.1);
+    [[-1.25,-1.1],[1.25,-1.1],[-1.25,1.1],[1.25,1.1]].forEach(([x,z])=>{add('brushless-motor',x,.2,z);add('propeller',x,.62,z);});
+    add('chassis',0,-.2,0);link(bat,esc1,'Battery power');link(bat,esc2,'Battery power');link(bat,esc3,'Battery power');link(bat,esc4,'Battery power');[esc1,esc2,esc3,esc4].forEach((e,i)=>link(fc,e,'Motor control signal '+(i+1)));
+  }else if(kind==='arm'){
+    const board=add('arduino-mega',0,.1,0),power=add('liion-pack',-1.8,.1,-.8),base=add('chassis',0,-.2,-.7),s1=add('servo',0,.65,-.5),s2=add('servo',.55,1.35,-.45),s3=add('servo',1.05,1.85,-.35),sensor=add('camera',1.55,2.15,-.3);
+    link(board,s1,'PWM control');link(board,s2,'PWM control');link(board,s3,'PWM control');link(power,s1,'Servo power rail');link(board,sensor,'Camera interface depends on model');
+  }else if(kind==='weather'){
+    const board=add('arduino-uno',0,.1,0),dht=add('dht-sensor',-1,.1,1),rain=add('rain-sensor',1,.1,1),screen=add('lcd1602',0,.1,-1.2),battery=add('battery-9v',-1.7,.1,-1);
+    link(board,dht,'5V / GND / data');link(board,rain,'VCC / GND / signal');link(board,screen,'I2C or parallel pins');link(battery,board,'Use correct regulated input');
+  }else if(kind==='smart'){
+    const board=add('esp32',0,.1,0),relay=add('relay',1.2,.1,0),ldr=add('ldr',-1.2,.1,.7),led=add('led',1.2,.1,1),power=add('stepdown',-1.4,.1,-.8);
+    link(board,ldr,'ADC signal');link(board,relay,'Control signal');link(board,led,'Low-voltage output through resistor');link(power,board,'Regulated supply');
+  }
+  selectedInstance=workspace[0]?.id||null;renderWorkspaceList();highlightSelected();drawConnectionMeshes();fitView();updateStatus();
+}
+
+let selectedId=parts[0].id, filter='All', query='', workspace=[], connections=[], selectedInstance=null, nextInstance=1;
+const $=id=>document.getElementById(id);
+const library=$('library'), details=$('details'), workspaceList=$('workspaceList');
+let scene, camera, renderer, controls, group, grid, raycaster, pointer;
+const instanceMeshes=new Map();
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function renderCategories(){ $('categories').innerHTML=categories.map(c=>`<button class="chip ${filter===c?'active':''}" data-cat="${esc(c)}">${esc(c)}</button>`).join('');$('categories').querySelectorAll('button').forEach(b=>b.onclick=()=>{filter=b.dataset.cat;renderCategories();renderLibrary();});}
+function renderLibrary(){const shown=parts.filter(p=>(filter==='All'||p.category===filter)&&(p.name+' '+p.category+' '+p.desc+' '+p.items).toLowerCase().includes(query.toLowerCase()));$('partCount').textContent=shown.length+' parts';library.innerHTML=shown.map(p=>`<button class="part ${p.id===selectedId?'selected':''}" data-id="${p.id}"><span class="part-icon">${p.icon}</span><span><b>${esc(p.name)}</b><small>${esc(p.category)}</small></span></button>`).join('')||'<p class="description">No matching components.</p>';library.querySelectorAll('.part').forEach(b=>b.onclick=()=>selectPart(b.dataset.id));}
+function selectPart(id){selectedId=id;renderLibrary();renderDetails();updateStatus();}
+function renderDetails(){const p=parts.find(x=>x.id===selectedId)||parts[0];details.innerHTML=`<div class="info-title"><div class="big-icon">${p.icon}</div><div><h3>${esc(p.name)}</h3><p>${esc(p.category)} · 3D concept model</p></div></div><span class="tag">${esc(p.type.toUpperCase())}</span><p class="description" style="margin-top:12px">${esc(p.desc)}</p><h4>Typical use</h4><p class="description">${esc(p.use)}</p><h4>Quick specs</h4><div class="specs">${Object.entries(p.specs).map(([k,v])=>`<div class="spec"><small>${esc(k)}</small><b>${esc(v)}</b></div>`).join('')}</div><h4>Physical parts to look for</h4><p class="description">${esc(p.items)}</p><button class="primary" style="width:100%;margin-top:12px" id="detailAdd">＋ Add this component to 3D workspace</button>`;$('detailAdd').onclick=()=>addToWorkspace(p.id);}
+function renderWorkspaceList(){workspaceList.innerHTML=workspace.map(w=>{const p=parts.find(p=>p.id===w.partId);return `<div class="workspace-item" style="${selectedInstance===w.id?'border-color:var(--accent)':''}"><span>${p?.icon||'◈'} ${esc(w.label)}</span><span><button data-select="${w.id}">Select</button> <button data-del="${w.id}">×</button></span></div>`}).join('')||'<p class="description">Workspace is empty. Add parts from the library.</p>';workspaceList.querySelectorAll('[data-select]').forEach(b=>b.onclick=()=>{selectedInstance=b.dataset.select;const w=workspace.find(x=>x.id===selectedInstance);if(w)selectPart(w.partId);highlightSelected();renderWorkspaceList();updateStatus();});workspaceList.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>removeInstance(b.dataset.del));const options='<option value="">Choose component…</option>'+workspace.map(w=>`<option value="${w.id}">${esc(w.label)}</option>`).join('');$('fromPart').innerHTML=options;$('toPart').innerHTML=options;renderConnections();}
+function renderConnections(){$('connections').innerHTML=connections.map((c,i)=>{const a=workspace.find(w=>w.id===c.from),b=workspace.find(w=>w.id===c.to);return `<div class="workspace-item"><span>↔ ${esc(a?.label||'Removed')} — ${esc(b?.label||'Removed')}<br><small style="color:var(--muted)">${esc(c.label||'Connection note')}</small></span><button data-conn="${i}">×</button></div>`}).join('')||'<p class="description">No connection notes yet.</p>';drawConnectionMeshes();$('connections').querySelectorAll('[data-conn]').forEach(b=>b.onclick=()=>{connections.splice(Number(b.dataset.conn),1);renderConnections();});}
+function addToWorkspace(partId){const p=parts.find(x=>x.id===partId);if(!p)return;const id='part-'+nextInstance++;const n=workspace.length;workspace.push({id,partId,label:p.name+' '+(workspace.filter(w=>w.partId===partId).length+1),x:((n%3)-1)*2.6,y:0,z:(Math.floor(n/3)%3-1)*2.2});selectedInstance=id;buildMesh(workspace[workspace.length-1]);renderWorkspaceList();highlightSelected();updateStatus();}
+function removeInstance(id){workspace=workspace.filter(w=>w.id!==id);connections=connections.filter(c=>c.from!==id&&c.to!==id);const m=instanceMeshes.get(id);if(m){group.remove(m);dispose(m);instanceMeshes.delete(id);}if(selectedInstance===id)selectedInstance=workspace[0]?.id||null;renderWorkspaceList();highlightSelected();updateStatus();}
+function clearWorkspace(){workspace=[];connections=[];selectedInstance=null;for(const m of instanceMeshes.values()){group.remove(m);dispose(m);}instanceMeshes.clear();renderWorkspaceList();updateStatus();}
+function dispose(obj){obj.traverse?.(o=>{if(o.geometry)o.geometry.dispose();if(o.material){if(Array.isArray(o.material))o.material.forEach(m=>m.dispose());else o.material.dispose();}});}
+function mat(color,rough=.45,metal=0,opts={}){
+  return new THREE.MeshPhysicalMaterial({
+    color, roughness:rough, metalness:metal,
+    clearcoat:opts.clearcoat||0,
+    clearcoatRoughness:opts.clearcoatRoughness||.3,
+    emissive:opts.emissive||0x000000,
+    emissiveIntensity:opts.emissiveIntensity||0,
+    anisotropy:opts.anisotropy||0,
+    sheen:opts.sheen||0,
+    sheenColor:opts.sheenColor||0xffffff,
+    transmission:opts.transmission||0,
+    thickness:opts.thickness||0,
+    ior:opts.ior||1.5
+  });
+}
+function box(parent,x,y,z,sx,sy,sz,color,rough=.45,metal=0,opts={}){const m=new THREE.Mesh(new THREE.BoxGeometry(sx,sy,sz),mat(color,rough,metal,opts));m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;}
+function cyl(parent,x,y,z,r1,r2,h,color,rotX=0,rotZ=0,segments=40,rough=.4,metal=.3,opts={}){const m=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,segments),mat(color,rough,metal,opts));m.position.set(x,y,z);m.rotation.x=rotX;m.rotation.z=rotZ;m.castShadow=true;parent.add(m);return m;}
+function sphere(parent,x,y,z,r,color,rough=.4,metal=.1,opts={}){const m=new THREE.Mesh(new THREE.SphereGeometry(r,28,20),mat(color,rough,metal,opts));m.position.set(x,y,z);m.castShadow=true;parent.add(m);return m;}
+function line(parent,points,color=0xe8b84b,r=.03){const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p)));const m=new THREE.Mesh(new THREE.TubeGeometry(curve,40,r,10,false),mat(color,.38,.12,{clearcoat:.15}));m.castShadow=true;parent.add(m);return m;}
+function pinRow(parent,x0,y,z,count,spacing){
+  for(let i=0;i<count;i++){
+    box(parent,x0+i*spacing,y+.02,z,.085,.14,.085,0x111418,.35,.05,{clearcoat:.2});
+    box(parent,x0+i*spacing,y-.1,z,.045,.22,.045,0xd4af37,.15,.92,{clearcoat:.4,anisotropy:.3});
+  }
+}
+function makeModel(p){const g=new THREE.Group();const pcb=p.color||0x237e70;const dark=0x1a1f2a,metal=0xc5ced8,gold=0xd4af37,silv=0xb8c0cc;
+switch(p.type){
+case'board':{
+  const boardCol=p.id.includes('mega')?0x0c5a54:p.id.includes('esp')?0x243040:p.id.includes('pi')?0x266b3a:0x0d6e66;
+  box(g,0,0,0,2.9,.1,1.7,boardCol,.55,.02,{clearcoat:.08});
+  box(g,0,.055,0,2.7,.008,1.5,0x0a4540,.7,.01);
+  box(g,-1.32,.16,.02,.42,.26,.48,0x1c2026,.28,.35,{clearcoat:.35});
+  box(g,-1.48,.16,.02,.14,.16,.32,0xc8d0d8,.12,.88,{clearcoat:.5});
+  box(g,-1.48,.16,.02,.02,.2,.36,0x888888,.1,.95);
+  cyl(g,-.85,.18,-.6,.14,.14,.26,0x161a20,Math.PI/2,0,20,.25,.45,{clearcoat:.3});
+  cyl(g,-.85,.18,-.78,.08,.08,.1,0xc8d0d8,Math.PI/2,0,16,.1,.9,{clearcoat:.6});
+  box(g,-.38,.1,-.6,.26,.1,.22,0x2a3038,.4,.15,{clearcoat:.25});
+  cyl(g,-.38,.2,-.6,.07,.07,.08,0xf0f0f0,0,0,16,.25,.05,{clearcoat:.4});
+  box(g,-.12,.16,0,.78,.18,.6,0x14181e,.3,.12,{clearcoat:.15});
+  box(g,-.12,.26,0,.5,.01,.35,0x333333,.5,.05);
+  box(g,.48,.12,-.18,.2,.12,.14,0xc8d0d8,.18,.75,{clearcoat:.3});
+  sphere(g,-.58,.22,.48,.055,0xff2a2a,.2,.05,{emissive:0xff2222,emissiveIntensity:.6,clearcoat:.5});
+  sphere(g,-.38,.22,.48,.055,0x22ee55,.2,.05,{emissive:0x22ee55,emissiveIntensity:.7,clearcoat:.5});
+  sphere(g,.98,.2,.52,.05,0xffcc22,.2,.05,{emissive:0xffaa00,emissiveIntensity:.5,clearcoat:.4});
+  pinRow(g,-1.2,.14,.78,14,.16);
+  pinRow(g,-1.05,.14,-.78,12,.16);
+  for(let i=0;i<3;i++)for(let j=0;j<2;j++){
+    box(g,1.2,.14,-.2+i*.2+j*.05,.07,.12,.07,0x111418,.3,.05);
+    box(g,1.2,.02,-.2+i*.2+j*.05,.04,.18,.04,0xe8c547,.15,.9);
+  }
+  box(g,.88,.18,-.38,.32,.22,.26,0x161a20,.32,.2,{clearcoat:.2});
+  for(let x of [-1.25,1.25])for(let z of [-.65,.65])cyl(g,x,.06,z,.08,.08,.04,0x111111,0,0,12,.4,.1);
+  break;}
+case'battery':{
+  if(p.id==='battery-9v'){
+    // Classic 9V rectangular battery
+    box(g,0,0,0,.95,.72,.52,0x2a3038,.5,.15);
+    box(g,0,.38,0,.7,.08,.35,silv,.3,.75); // top metal
+    // terminals
+    cyl(g,-.18,.48,0,.09,.09,.12,0xe8e8e8,0,0,16,.2,.9);
+    cyl(g,.18,.48,0,.07,.07,.12,0xd94c4c,0,0,16,.2,.9);
+    // label area
+    box(g,0,0,.27,.7,.45,.02,0x1a1f26,.6,.05);
+    box(g,0,.1,.28,.5,.18,.015,0xf5c518,.4,.1);
+  }else if(p.id==='lipo'||p.id==='liion-pack'){
+    // Soft-pack LiPo / Li-ion
+    const isLipo=p.id==='lipo';
+    box(g,0,0,0,isLipo?1.55:1.25,.55,.95,0x1c1f26,.45,.08);
+    // shrink-wrap highlight
+    box(g,0,.28,0,isLipo?1.45:1.15,.02,.85,0x2a3038,.55,.05);
+    // balance / power leads
+    line(g,[[.7,.1,0],[1.1,.15,.15],[1.35,.1,.2]],0xd94c4c,.03);
+    line(g,[[.7,-.05,0],[1.1,-.05,-.1],[1.35,-.05,-.15]],0x222222,.03);
+    if(isLipo){
+      // balance connector
+      box(g,1.4,.05,.05,.18,.12,.22,0xf0f0f0,.4,.1);
+      for(let i=0;i<4;i++)box(g,1.48,.05,-.06+i*.04,.04,.04,.03,gold,.2,.85);
+    }
+    // warning stripe
+    box(g,0,0,.48,isLipo?1.4:1.1,.35,.015,0xffcc00,.4,.05);
+  }else{
+    box(g,0,0,0,1.1,.9,.55,pcb,.5,.1);
+    box(g,0,.47,0,.65,.08,.32,metal,.3,.7);
+    cyl(g,-.22,.54,0,.09,.09,.1,0xd9dfe8);cyl(g,.22,.54,0,.09,.09,.1,0xd94c4c);
+  }
+  break;}
+case'breadboard':{
+  // Full-size solderless breadboard
+  box(g,0,0,0,3.2,.22,1.55,0xe8eaef,.55,.05);
+  // center trench
+  box(g,0,.12,0,.18,.02,1.35,0xb0b8c4,.6,.05);
+  // power rails (red / blue)
+  box(g,0,.115,-.68,3.0,.015,.04,0xc74e54,.4,.1);
+  box(g,0,.115,.68,3.0,.015,.04,0x3a6bc7,.4,.1);
+  // contact holes – dense realistic grid
+  for(let x=-1.45;x<=1.46;x+=.15){
+    for(let z of [-.52,-.37,-.22,.22,.37,.52])cyl(g,x,.125,z,.022,.022,.03,0x3a4250,0,0,8,.3,.2);
+    cyl(g,x,.125,-.68,.022,.022,.03,0x8b2e33,0,0,8,.3,.2);
+    cyl(g,x,.125,.68,.022,.022,.03,0x2a4a8a,0,0,8,.3,.2);
+  }
+  // side numbers / letters feel
+  for(let i=0;i<5;i++)box(g,-1.5+i*.7,.13,-.78,.08,.01,.04,0x666666,.7,.05);
+  break;}
+case'wire':{
+  const col=p.id.includes('dupont')?0xe04b4b:0xe5b83f;
+  line(g,[[-1.15,0,0],[-.7,.32,.05],[-.2,.18,.12],[.35,.38,-.05],[.85,.12,.08],[1.2,.02,0]],col,.038);
+  // male / female Dupont housings
+  box(g,-1.28,0,0,.22,.14,.14,0x2a2e36,.4,.2);
+  box(g,1.28,.02,0,.22,.14,.14,0x2a2e36,.4,.2);
+  // metal pins
+  box(g,-1.4,0,0,.08,.05,.05,gold,.2,.9);
+  box(g,1.4,.02,0,.08,.05,.05,gold,.2,.9);
+  break;}
+case'motor':{
+  if(p.id==='brushless-motor'){
+    cyl(g,0,.18,0,.48,.48,.32,0xb0b8c0,0,0,36,.3,.6,{clearcoat:.35,anisotropy:.2});
+    cyl(g,0,.02,0,.42,.42,.14,0x1a1e24,0,0,28,.35,.25);
+    for(let a=0;a<4;a++){const ang=a*Math.PI/2+.4;cyl(g,Math.cos(ang)*.3,-.02,Math.sin(ang)*.3,.05,.05,.08,0xc8d0d8,0,0,10,.15,.85);}
+    cyl(g,0,.42,0,.07,.07,.26,0xc8d0d8,0,0,16,.1,.95,{clearcoat:.5});
+    line(g,[[.28,.06,0],[.6,-.02,.18],[.85,-.08,.25]],0xe04040,.024);
+    line(g,[[.22,.06,.16],[.55,-.02,.32],[.8,-.08,.4]],0x111111,.024);
+    line(g,[[.22,.06,-.16],[.55,-.02,-.22],[.8,-.08,-.28]],0xf8f8f8,.024);
+  }else{
+    cyl(g,-.38,0,0,.36,.36,.62,0xa8b0b8,Math.PI/2,0,32,.32,.55,{clearcoat:.3});
+    cyl(g,-.72,0,0,.37,.37,.1,0x2a3038,Math.PI/2,0,28,.35,.25);
+    box(g,.18,0,0,.62,.55,.55,0xf0c840,.4,.06,{clearcoat:.2,sheen:.1});
+    for(let i=0;i<6;i++)box(g,.18,.28,-.2+i*.08,.55,.02,.04,0xd0a830,.4,.05);
+    cyl(g,.58,0,0,.08,.08,.4,0xc8d0d8,Math.PI/2,0,16,.1,.92,{clearcoat:.5});
+    box(g,.18,-.32,0,.45,.08,.6,0xd8b038,.38,.08);
+    box(g,-.58,.26,.14,.1,.1,.05,0xe04040,.25,.4);
+    box(g,-.58,.26,-.14,.1,.1,.05,0x111111,.25,.4);
+  }
+  break;}
+case'servo':{
+  // Standard hobby servo
+  box(g,0,0,0,1.05,.55,.78,0x1e8a6a,.5,.08); // body
+  box(g,0,.32,0,.9,.12,.7,0x1a1f26,.4,.15); // top cover
+  // output spline
+  cyl(g,0,.42,0,.14,.14,.12,silv,0,0,16,.2,.85);
+  // horn
+  box(g,0,.52,0,.72,.06,.12,silv,.25,.7);
+  box(g,0,.52,0,.12,.06,.42,silv,.25,.7);
+  // mounting ears
+  box(g,-.62,.05,0,.18,.08,.55,0x1a1f26,.4,.1);
+  box(g,.62,.05,0,.18,.08,.55,0x1a1f26,.4,.1);
+  // cable
+  line(g,[[-.4,-.15,.35],[-.55,-.35,.4],[-.8,-.4,.45]],0xd94c4c,.025);
+  line(g,[[-.35,-.15,.38],[-.5,-.35,.45],[-.75,-.4,.5]],0x222222,.025);
+  line(g,[[-.3,-.15,.32],[-.45,-.35,.35],[-.7,-.4,.4]],0xf5f5f5,.025);
+  break;}
+case'sensor':{
+  box(g,0,0,0,1.2,.1,.75,pcb,.6,.05);
+  if(p.id==='ultrasonic'){
+    // HC-SR04 style
+    for(let x of [-.32,.32]){
+      cyl(g,x,.12,0,.26,.26,.14,silv,Math.PI/2,0,24,.25,.7);
+      cyl(g,x,.2,0,.2,.2,.04,0x4a5568,Math.PI/2,0,20,.35,.3);
+      // mesh feel
+      for(let a=0;a<8;a++){const ang=a*Math.PI/4;box(g,x+Math.cos(ang)*.12,.22,Math.sin(ang)*.12,.04,.02,.04,0x2a3038,.4,.2);}
+    }
+    // control IC
+    box(g,0,.12,0,.35,.1,.25,0x1a1e24,.35,.15);
+  }else if(p.id==='rain-sensor'){
+    box(g,0,.1,0,1.0,.05,.55,0xc8d0dc,.5,.1);
+    for(let x=-.4;x<=.4;x+=.16)box(g,x,.14,0,.04,.03,.48,0x5a6575,.4,.3);
+  }else if(p.id==='dht-sensor'){
+    // DHT11/22 blue plastic
+    box(g,0,.2,0,.5,.35,.55,0x3a8cc7,.45,.05);
+    // vents
+    for(let y=0;y<4;y++)box(g,0,.08+y*.08,.28,.35,.04,.02,0x2a5a80,.5,.05);
+    // grille
+    box(g,0,.2,-.22,.42,.28,.03,0x1a1f26,.4,.1);
+  }else if(p.id==='gas-sensor'){
+    // MQ series metal can
+    cyl(g,0,.22,0,.28,.28,.35,0xc0c8d0,0,0,24,.3,.6);
+    // mesh top
+    cyl(g,0,.42,0,.26,.26,.04,0x8a929c,0,0,20,.35,.4);
+    box(g,0,.05,0,.7,.08,.5,pcb,.55,.05);
+  }else if(p.id==='ldr'){
+    // LDR disc
+    cyl(g,0,.12,0,.22,.22,.08,0x1a1a1a,0,0,20,.5,.05);
+    // squiggly pattern
+    for(let a=0;a<6;a++){const ang=a*Math.PI/3;box(g,Math.cos(ang)*.1,.17,Math.sin(ang)*.1,.08,.02,.04,0xd4af37,.3,.5);}
+  }else{
+    // generic IR
+    for(let x of [-.22,.22])cyl(g,x,.14,0,.11,.11,.14,0x1a1e24,0,0,12,.35,.2);
+    box(g,.4,.1,0,.12,.12,.2,silv,.25,.7);
+  }
+  // common header pins
+  for(let x of [-.35,0,.35]){box(g,x,-.08,.42,.05,.22,.05,silv,.2,.8);}
+  break;}
+case'module':{
+  box(g,0,0,0,1.25,.1,.85,pcb,.55,.05);
+  // main IC / heatsink area
+  box(g,0,.12,0,.5,.16,.4,0x1a1e24,.35,.2);
+  if(p.id==='motor-driver'||p.id==='esc'){
+    // screw terminals
+    for(let x of [-.45,0,.45]){
+      box(g,x,.12,.35,.22,.14,.18,0x2a2e36,.4,.2);
+      box(g,x,.2,.35,.1,.06,.08,silv,.2,.85);
+    }
+    // large caps
+    cyl(g,-.35,.18,-.25,.1,.1,.2,0x1a1e24,0,0,12,.3,.1);
+    cyl(g,.35,.18,-.25,.1,.1,.2,0x1a1e24,0,0,12,.3,.1);
+  }else if(p.id==='relay'){
+    // relay body
+    box(g,0,.2,0,.7,.35,.55,0x1a4a3a,.45,.1);
+    box(g,0,.4,0,.55,.05,.4,0x0f2a22,.5,.05);
+  }else if(p.id==='stepdown'){
+    // inductor
+    cyl(g,-.25,.18,0,.14,.14,.22,0x1a1e24,0,0,16,.3,.2);
+    // pot
+    cyl(g,.3,.16,0,.08,.08,.12,0x2a2e36,0,0,12,.35,.3);
+    box(g,.3,.24,0,.04,.04,.04,silv,.2,.8);
+  }
+  // pin headers
+  for(let x of [-.45,0,.45])box(g,x,.1,-.38,.1,.12,.1,silv,.2,.7);
+  break;}
+case'display':{
+  if(p.id==='oled'){
+    box(g,0,0,0,1.15,.08,.7,0x1a1e24,.4,.15);
+    box(g,0,.08,0,.95,.03,.5,0x0a0a0a,.3,.05);
+    // pixels feel
+    for(let i=0;i<8;i++)for(let j=0;j<16;j++)if((i+j)%3===0)box(g,-.42+j*.055,.1,-.18+i*.05,.04,.005,.03,0x4ecdc4,.25,.1);
+  }else{
+    // 16x2 LCD
+    box(g,0,0,0,1.85,.12,1.05,0x2a3545,.5,.1);
+    box(g,0,.1,0,1.45,.04,.7,0x0d3b2e,.35,.05);
+    // character blocks
+    for(let i=0;i<2;i++)for(let j=0;j<16;j++)box(g,-.68+j*.09,.125,-.18+i*.22,.07,.015,.15,0x3ecf9a,.3,.05);
+    // backlight glow feel
+    box(g,0,.09,0,1.4,.005,.65,0x1a6b4a,.6,.05);
+  }
+  break;}
+case'led':{
+  cyl(g,0,.02,0,.18,.16,.2,0xa8c8d8,0,0,24,.25,.1,{clearcoat:.4,transmission:.15});
+  sphere(g,0,.22,0,.16,0xff3040,.18,.04,{emissive:0xff2030,emissiveIntensity:.8,clearcoat:.6,transmission:.1});
+  box(g,-.07,-.22,0,.04,.48,.04,0xc8d0d8,.12,.9,{clearcoat:.4});
+  box(g,.07,-.2,0,.04,.44,.04,0xc8d0d8,.12,.9,{clearcoat:.4});
+  cyl(g,0,-.06,0,.2,.2,.04,0x90b0c0,0,0,20,.3,.08);
+  break;}
+case'resistor':{
+  // axial resistor with color bands
+  cyl(g,0,0,0,.11,.11,.65,0xd8c090,0,Math.PI/2,20,.45,.05);
+  const bands=[0x1a1a1a,0xc34c40,0xd4af37,0xb69b51]; // black-red-gold-gold feel
+  [-.2,-.08,.05,.18].forEach((x,i)=>box(g,x,0,.12,.04,.2,.02,bands[i],.35,.1));
+  // leads
+  line(g,[[-.85,0,0],[-.38,0,0]],silv,.02);
+  line(g,[[.38,0,0],[.85,0,0]],silv,.02);
+  break;}
+case'capacitor':{
+  // electrolytic
+  cyl(g,0,.05,0,.22,.22,.5,0x2a5a9a,0,0,24,.35,.15);
+  // top vent + stripe
+  cyl(g,0,.32,0,.2,.2,.04,silv,0,0,16,.25,.7);
+  box(g,-.05,.3,.2,.04,.04,.08,0xe8e8e8,.3,.2);
+  // leads
+  box(g,-.08,-.28,0,.03,.28,.03,silv,.2,.85);
+  box(g,.08,-.28,0,.03,.28,.03,silv,.2,.85);
+  break;}
+case'transistor':{
+  // TO-92 style
+  cyl(g,0,.05,0,.18,.18,.28,0x1a1e24,0,0,16,.4,.1);
+  // flat face
+  box(g,0,.05,.16,.3,.28,.04,0x1a1e24,.4,.1);
+  // three leads
+  for(let x of [-.1,0,.1])line(g,[[x,-.05,0],[x,-.4,0]],silv,.018);
+  break;}
+case'buzzer':{
+  // piezo buzzer
+  cyl(g,0,0,0,.32,.32,.2,0x1a1e24,0,0,24,.4,.15);
+  cyl(g,0,.12,0,.24,.24,.05,0x3a4250,0,0,20,.35,.2);
+  // center hole
+  cyl(g,0,.15,0,.06,.06,.04,0x0a0c10,0,0,12,.5,.05);
+  // pins
+  box(g,-.12,-.15,0,.04,.2,.04,silv,.2,.8);
+  box(g,.12,-.15,0,.04,.2,.04,silv,.2,.8);
+  break;}
+case'panel':{
+  // solar panel
+  box(g,0,0,0,1.6,.1,1.05,0x1a3a5a,.5,.1);
+  // cells grid
+  for(let x=-.55;x<=.56;x+=.55)box(g,x,.07,0,.02,.02,.95,0x5a9ad4,.4,.2);
+  for(let z=-.35;z<=.36;z+=.35)box(g,0,.07,z,1.45,.02,.02,0x5a9ad4,.4,.2);
+  // bus bars
+  box(g,0,.08,0,1.5,.005,1.0,0x8ab8e0,.35,.3);
+  break;}
+case'wheel':{
+  // robot wheel with tire tread
+  cyl(g,0,0,0,.58,.58,.28,0x1a1e24,Math.PI/2,0,28,.55,.05); // tire
+  // tread grooves
+  for(let a=0;a<12;a++){const ang=a*Math.PI/6;box(g,Math.cos(ang)*.55,Math.sin(ang)*.55,0,.06,.12,.3,0x0f1115,.6,.05);}
+  // hub
+  cyl(g,0,0,0,.28,.28,.3,0x8a929c,Math.PI/2,0,20,.3,.5);
+  cyl(g,0,0,0,.1,.1,.32,0x2a3038,Math.PI/2,0,12,.25,.7);
+  break;}
+case'chassis':{
+  // acrylic / metal chassis plate
+  box(g,0,0,0,2.9,.12,1.8,0x5a6a7e,.45,.25);
+  // mounting holes
+  for(let x of [-1.15,1.15])for(let z of [-.65,.65])cyl(g,x,.08,z,.06,.06,.05,silv,0,0,10,.2,.8);
+  // slots
+  box(g,0,.08,0,1.8,.02,.15,0x3a4a5a,.5,.1);
+  break;}
+case'switch':{
+  // rocker / toggle switch
+  box(g,0,0,0,.7,.32,.5,0x2a3038,.4,.2);
+  box(g,0,.2,0,.32,.14,.28,0x6a7585,.35,.3);
+  box(g,0,.28,0,.2,.1,.18,0xe0e4e8,.3,.15);
+  // terminals
+  box(g,-.15,-.22,0,.05,.15,.05,silv,.2,.8);
+  box(g,.15,-.22,0,.05,.15,.05,silv,.2,.8);
+  break;}
+case'cable':{
+  // USB cable
+  line(g,[[-1.2,0,0],[-.6,.12,.08],[0,.08,0],[.6,.12,-.08],[1.2,0,0]],0x4a5568,.055);
+  // USB-A
+  box(g,-1.35,0,0,.28,.14,.22,silv,.25,.75);
+  box(g,-1.5,0,0,.08,.1,.16,0x1a1e24,.4,.1);
+  // other end
+  box(g,1.35,0,0,.28,.14,.22,silv,.25,.75);
+  break;}
+case'propeller':{
+  // two-blade drone prop
+  box(g,0,.05,0,.12,.08,.12,0x2a3038,.4,.2); // hub
+  // blades
+  const blade=(ang)=>{const b=new THREE.Group();box(b,0,0,.55,.08,.02,1.1,0x1a1e24,.5,.05);b.rotation.y=ang;g.add(b);};
+  blade(0);blade(Math.PI);
+  cyl(g,0,.08,0,.08,.08,.1,silv,0,0,12,.2,.8);
+  break;}
+case'camera':{
+  // camera module
+  box(g,0,0,0,.9,.08,.7,0x1a1e24,.45,.1);
+  // lens
+  cyl(g,0,.12,0,.22,.22,.18,0x2a3038,0,0,20,.35,.2);
+  cyl(g,0,.22,0,.16,.16,.08,0x0a0c10,0,0,16,.3,.05);
+  // ribbon connector area
+  box(g,0,-.02,-.4,.6,.04,.15,0xd4af37,.3,.4);
+  break;}
+case'lidar':{
+  // 2D LiDAR
+  cyl(g,0,.2,0,.45,.45,.35,0x3a4250,0,0,28,.4,.2);
+  cyl(g,0,.4,0,.38,.38,.08,0x1a1e24,0,0,24,.35,.15);
+  // optical window
+  cyl(g,0,.45,0,.3,.3,.04,0x5a9ad4,.3,.3);
+  // base
+  box(g,0,0,0,.7,.08,.7,0x2a3038,.4,.15);
+  break;}
+case'bearing':{
+  // ball bearing
+  cyl(g,0,0,0,.28,.28,.12,silv,0,0,24,.2,.85);
+  cyl(g,0,0,0,.12,.12,.14,0x2a3038,0,0,16,.3,.5);
+  // balls feel
+  for(let a=0;a<8;a++){const ang=a*Math.PI/4;sphere(g,Math.cos(ang)*.2,0,Math.sin(ang)*.2,.04,silv,.15,.9);}
+  break;}
+case'screw':{
+  // M3 screw + nut
+  cyl(g,0,.15,0,.08,.08,.35,silv,0,0,12,.2,.9);
+  // head
+  cyl(g,0,.35,0,.14,.14,.08,silv,0,0,12,.2,.9);
+  // slot
+  box(g,0,.4,0,.02,.02,.18,0x1a1e24,.5,.1);
+  // nut
+  box(g,0,-.1,0,.22,.08,.22,silv,.25,.8);
+  break;}
+case'pot':{
+  // potentiometer
+  cyl(g,0,.1,0,.22,.22,.2,0x2a3038,0,0,20,.4,.2);
+  // shaft
+  cyl(g,0,.28,0,.08,.08,.22,silv,0,0,12,.2,.85);
+  // knob
+  cyl(g,0,.42,0,.14,.14,.1,0x1a1e24,0,0,16,.4,.1);
+  // three pins
+  for(let x of [-.12,0,.12])box(g,x,-.15,0,.04,.2,.04,silv,.2,.8);
+  break;}
+case'connector':{
+  // JST 2-pin
+  box(g,0,0,0,.35,.22,.28,0xf0f0f0,.45,.05);
+  // contacts
+  box(g,-.08,.05,.18,.06,.08,.08,gold,.2,.9);
+  box(g,.08,.05,.18,.06,.08,.08,gold,.2,.9);
+  // wires
+  line(g,[[-.08,-.05,-.1],[-.15,-.2,-.3],[-.2,-.3,-.5]],0xd94c4c,.025);
+  line(g,[[.08,-.05,-.1],[.15,-.2,-.3],[.2,-.3,-.5]],0x222222,.025);
+  break;}
+default:
+  box(g,0,0,0,1,.3,.7,pcb,.5,.1);
+}
+g.userData={partId:p.id};return g;}
+function buildMesh(w){const p=parts.find(p=>p.id===w.partId);if(!p)return;const obj=makeModel(p);obj.position.set(w.x,w.y,w.z);obj.userData.instanceId=w.id;group.add(obj);instanceMeshes.set(w.id,obj);}
+function highlightSelected(){for(const [id,obj] of instanceMeshes){obj.traverse(o=>{if(o.isMesh&&o.material){if(!o.userData.baseEmissive)o.userData.baseEmissive=o.material.emissive?.getHex?.()||0;if(o.material.emissive)o.material.emissive.setHex(id===selectedInstance?0x164d56:0x000000);}})}}
+function updateStatus(){const p=parts.find(p=>p.id===selectedId);$('sceneStatus').textContent=`Library: ${parts.length} components · Workspace: ${workspace.length} items · Selected: ${p?.name||'none'}`;}
+function init3D(){const host=$('stage');scene=new THREE.Scene();scene.background=null;camera=new THREE.PerspectiveCamera(45,host.clientWidth/host.clientHeight,.1,1000);camera.position.set(7,7,9);renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(host.clientWidth,host.clientHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;renderer.outputColorSpace=THREE.SRGBColorSpace;host.appendChild(renderer.domElement);controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.target.set(0,0,0);scene.add(new THREE.HemisphereLight(0xd0e4ff,0x1a2235,1.4));
+const light=new THREE.DirectionalLight(0xffffff,3.2);light.position.set(7,12,8);light.castShadow=true;light.shadow.mapSize.set(2048,2048);light.shadow.camera.near=.5;light.shadow.camera.far=50;light.shadow.camera.left=-14;light.shadow.camera.right=14;light.shadow.camera.top=14;light.shadow.camera.bottom=-14;scene.add(light);
+const light2=new THREE.PointLight(0x7ad4c8,25,40);light2.position.set(-6,5,-5);scene.add(light2);
+const light3=new THREE.PointLight(0xffe0b0,12,30);light3.position.set(4,3,5);scene.add(light3);
+const amb=new THREE.AmbientLight(0x404860,.55);scene.add(amb);grid=new THREE.GridHelper(20,20,0x31476c,0x23314d);grid.position.y=-.62;scene.add(grid);const axes=new THREE.AxesHelper(1.4);axes.position.set(-4,-.6,-4);scene.add(axes);group=new THREE.Group();scene.add(group);raycaster=new THREE.Raycaster();pointer=new THREE.Vector2();renderer.domElement.addEventListener('pointerdown',onPointerDown);window.addEventListener('resize',resize);function animate(){requestAnimationFrame(animate);controls.update();renderer.render(scene,camera);}animate();$('sceneStatus').textContent='3D scene ready · drag to orbit, scroll to zoom';}
+function resize(){if(!renderer)return;const host=$('stage');camera.aspect=host.clientWidth/host.clientHeight;camera.updateProjectionMatrix();renderer.setSize(host.clientWidth,host.clientHeight);}
+function onPointerDown(event){if(!renderer)return;const rect=renderer.domElement.getBoundingClientRect();pointer.x=((event.clientX-rect.left)/rect.width)*2-1;pointer.y=-((event.clientY-rect.top)/rect.height)*2+1;raycaster.setFromCamera(pointer,camera);const hits=raycaster.intersectObjects([...instanceMeshes.values()],true);if(hits.length){let obj=hits[0].object;while(obj&&!obj.userData.instanceId)obj=obj.parent;if(obj?.userData.instanceId){selectedInstance=obj.userData.instanceId;const w=workspace.find(x=>x.id===selectedInstance);if(w)selectPart(w.partId);renderWorkspaceList();highlightSelected();}}}
+function resetView(){camera.position.set(7,7,9);controls.target.set(0,0,0);controls.update();}
+function fitView(){if(!group||!camera)return;const box3=new THREE.Box3().setFromObject(group);if(box3.isEmpty()){resetView();return;}const center=box3.getCenter(new THREE.Vector3());const size=box3.getSize(new THREE.Vector3());const max=Math.max(size.x,size.y,size.z,3);controls.target.copy(center);camera.position.copy(center).add(new THREE.Vector3(max*1.25,max*1.0,max*1.35));camera.lookAt(center);controls.update();}
+function exportProject(){const data={format:'robotics-lab-project',version:1,exportedAt:new Date().toISOString(),workspace,connections,selectedId,nextInstance};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='robotics-lab-project.json';a.click();URL.revokeObjectURL(a.href);}
+function importProject(data){if(!data||data.format!=='robotics-lab-project'||!Array.isArray(data.workspace))throw new Error('Not a Robotics Lab project JSON');clearWorkspace();workspace=data.workspace.filter(w=>parts.some(p=>p.id===w.partId)).map(w=>({...w}));connections=Array.isArray(data.connections)?data.connections.filter(c=>workspace.some(w=>w.id===c.from)&&workspace.some(w=>w.id===c.to)):[];selectedId=parts.some(p=>p.id===data.selectedId)?data.selectedId:parts[0].id;nextInstance=Math.max(Number(data.nextInstance)||1,workspace.length+1);for(const w of workspace)buildMesh(w);selectedInstance=workspace[0]?.id||null;renderCategories();renderLibrary();renderDetails();renderWorkspaceList();highlightSelected();updateStatus();}
+$('search').addEventListener('input',e=>{query=e.target.value;renderLibrary();});
+$('addSelected').onclick=()=>addToWorkspace(selectedId);
+$('removeSelected').onclick=()=>{if(selectedInstance)removeInstance(selectedInstance);};
+$('resetView').onclick=resetView;$('fitView').onclick=fitView;
+$('clearWorkspace').onclick=()=>{if(confirm('Clear all workspace components and connection notes?'))clearWorkspace();};
+$('newProject').onclick=()=>{if(!workspace.length||confirm('Start a new workspace and remove current items?'))clearWorkspace();};
+$('addArduino').onclick=()=>addToWorkspace('arduino-uno');
+$('addBattery').onclick=()=>addToWorkspace('battery-9v');
+$('addBreadboard').onclick=()=>addToWorkspace('breadboard');
+$('addMotor').onclick=()=>addToWorkspace('dc-motor');
+document.querySelectorAll('[data-template]').forEach(b=>b.onclick=()=>addTemplate(b.dataset.template));
+$('connectBtn').onclick=()=>{const from=$('fromPart').value,to=$('toPart').value,label=$('wireLabel').value.trim();if(!from||!to){alert('Choose both components first.');return;}if(from===to){alert('Choose two different components.');return;}connections.push({from,to,label:label||'Connection note'});$('wireLabel').value='';renderConnections();};
+$('exportBtn').onclick=exportProject;
+$('importBtn').onclick=()=>$('importFile').click();
+$('importFile').onchange=async e=>{const f=e.target.files?.[0];if(!f)return;try{importProject(JSON.parse(await f.text()));}catch(err){alert('Could not import: '+err.message);}e.target.value='';};
+$('mediaImage').onchange=e=>{const f=e.target.files?.[0];if(!f)return;const url=URL.createObjectURL(f);$('mediaFrame').innerHTML='';const img=document.createElement('img');img.src=url;img.alt='Reference project photo';$('mediaFrame').appendChild(img);};
+$('mediaVideo').onchange=e=>{const f=e.target.files?.[0];if(!f)return;const url=URL.createObjectURL(f);$('mediaFrame').innerHTML='';const v=document.createElement('video');v.src=url;v.controls=true;v.playsInline=true;$('mediaFrame').appendChild(v);};
+$('loadVideo').onclick=()=>{let raw=$('youtubeUrl').value.trim();if(!raw){alert('Paste a YouTube link first.');return;}let id='';try{const u=new URL(raw);if(u.hostname.includes('youtu.be'))id=u.pathname.slice(1);else if(u.hostname.includes('youtube.com'))id=u.searchParams.get('v')||u.pathname.split('/').filter(Boolean).pop();}catch{}if(!/^[\w-]{11}$/.test(id)){alert('Please enter a valid YouTube video URL.');return;}$('mediaFrame').innerHTML='';const f=document.createElement('iframe');f.src='https://www.youtube-nocookie.com/embed/'+id;f.title='Robotics reference video';f.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';f.allowFullscreen=true;$('mediaFrame').appendChild(f);};
+renderCategories();renderLibrary();renderDetails();renderWorkspaceList();updateStatus();
+try{init3D();}catch(e){$('sceneStatus').textContent='Could not start 3D. Check your internet connection and reload.';console.error(e);}
+</script>
+</body>
+</html>
